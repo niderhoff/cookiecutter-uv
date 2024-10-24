@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-from __future__ import annotations
-
 import os
 import shutil
+import subprocess
 
 PROJECT_DIRECTORY = os.path.realpath(os.path.curdir)
 
@@ -36,3 +35,7 @@ if __name__ == "__main__":
 
     if "{{cookiecutter.devcontainer}}" != "y":
         remove_dir(".devcontainer")
+
+    subprocess.call(["git", "init"])
+    subprocess.call(["git", "add", "*"])
+    subprocess.call(["git", "commit", "-m", "Initial commit"])

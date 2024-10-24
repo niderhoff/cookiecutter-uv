@@ -1,48 +1,38 @@
 [project]
-name = "{{cookiecutter.project_name}}"
-version = "0.0.1"
-description = "{{cookiecutter.project_description}}"
-authors = [{ name = "{{cookiecutter.author}}", email = "{{cookiecutter.email}}" }]
+name = "example-project"
+version = "0.1.0"
+description = "Add your description here."
 readme = "README.md"
-keywords = ['python']
-requires-python = ">=3.9,<4.0"
-classifiers = [
-    "Intended Audience :: Developers",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Topic :: Software Development :: Libraries :: Python Modules",
+authors = [
+    { name = "Nicolas Iderhoff", email = "hello@niid.xyz" }
 ]
+requires-python = ">=3.13,<4.0"
+dependencies = []
 
 [project.urls]
-Homepage = "https://{{cookiecutter.author_github_handle}}.github.io/{{cookiecutter.project_name}}/"
-Repository = "https://github.com/{{cookiecutter.author_github_handle}}/{{cookiecutter.project_name}}"
-Documentation = "https://{{cookiecutter.author_github_handle}}.github.io/{{cookiecutter.project_name}}/"
+Homepage = "https://niderhoff.github.io/example-project/"
+Repository = "https://github.com/niderhoff/example-project"
+Documentation = "https://niderhoff.github.io/example-project/"
+
+[project.scripts]
+x = "x:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.uv]
 dev-dependencies = [
     "pytest>=7.2.0",
     "pre-commit>=2.20.0",
     "tox-uv>=1.11.3",
-    {% if cookiecutter.deptry == 'y' %}"deptry>=0.20.0",{% endif %}
     "mypy>=0.991",
-    {% if cookiecutter.codecov == 'y' %}"pytest-cov>=4.0.0",{% endif %}
     "ruff>=0.6.9",
-    {% if cookiecutter.mkdocs == 'y' %}"mkdocs>=1.4.2",
-    "mkdocs-material>=8.5.10",
-    "mkdocstrings[python]>=0.26.1",{% endif %}
+    "poethepoet",
 ]
 
-[build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
-
 [tool.mypy]
-files = ["{{cookiecutter.project_slug}}"]
+files = ["example_project"]
 disallow_untyped_defs = "True"
 disallow_any_unimported = "True"
 no_implicit_optional = "True"
@@ -55,49 +45,50 @@ show_error_codes = "True"
 testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py39"
-line-length = 120
+line-length = 88
 fix = true
 
 [tool.ruff.lint]
 select = [
-    # flake8-2020
-    "YTT",
-    # flake8-bandit
-    "S",
-    # flake8-bugbear
-    "B",
-    # flake8-builtins
-    "A",
-    # flake8-comprehensions
-    "C4",
-    # flake8-debugger
-    "T10",
-    # flake8-simplify
-    "SIM",
-    # isort
-    "I",
-    # mccabe
-    "C90",
-    # pycodestyle
-    "E", "W",
-    # pyflakes
-    "F",
-    # pygrep-hooks
-    "PGH",
-    # pyupgrade
-    "UP",
-    # ruff
-    "RUF",
-    # tryceratops
-    "TRY",
+    "E", "W", # pycodestyle
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    # "D",      # pydocstyle
+    "UP",     # pyupgrade
+    "YTT",    # flake8-2020
+    # "ANN",   # flake8-annotations
+    "ASYNC", # flake8-async
+    # "S",     # flake8-bandit
+    # "B",     # flake8-bugbear
+    "A",     # flake8-builtins
+    "C4",    # flake8-comprehensions
+    "T10",   # flake8-debugger
+    "G",     # flake8-logging-format
+    "PIE",   # flake8-pie
+    "PYI",   # flake8-pyi
+    "PT",    # flake8-pytest-style
+    "Q",     # flake8-quotes
+    "RET",   # flake8-return
+    "SIM",   # flake8-simplify
+    "TCH",   # flake8-type-checking
+    "PTH",   # flake8-use-pathlib
+    "PGH",   # pygrep-hooks
+    "PERF",  # perflint
+    "TRY",   # tryceratops
+    "RUF"    # ruff-specific rules
 ]
 ignore = [
-    # LineTooLong
-    "E501",
-    # DoNotAssignLambda
-    "E731",
+    "C408",   # unnecessary-collection-call
+    "PT015",  # pytest-assert-always-false
+    "SIM118", # in-dict-keys
+    "PTH109", # os-getcwd
+    "PTH123", # builtin-open
+    "RUF012", # mutable-class-default
+    "E501", # LineTooLong
+    "E731", # DoNotAssignLambda
 ]
+fixable = [ "E","F","I"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
@@ -105,11 +96,111 @@ ignore = [
 [tool.ruff.format]
 preview = true
 
-{% if cookiecutter.codecov == "y"-%}
-[tool.coverage.report]
-skip_empty = true
+[tool.poe.tasks]
+[tool.poe.tasks.install]
+help = "Install the virtual environment and install the pre-commit hooks"
+sequence =["_uv_install", "_precommit_install"]
 
-[tool.coverage.run]
-branch = true
-source = ["{{cookiecutter.project_slug}}"]
-{% endif %}
+[tool.poe.tasks._uv_install]
+cmd = "uv sync"
+
+[tool.poe.tasks._precommit_install]
+cmd ="uv run pre-commit install"
+
+[tool.poe.tasks.check]
+help = "Run code quality tools"
+{%- if cookiecutter.deptry == 'y' %}
+sequence = [ "_uv_lock", "_precommit_run", "mypy", "deptry"]
+{%- else %}
+sequence = [ "_uv_lock", "_precommit_run", "mypy"]
+{%- endif %}
+
+[tool.poe.tasks.all]
+help = "Run all checks & tests"
+sequence = [ "check", "test" ]
+
+[tool.poe.tasks.ruff-lint]
+help = "Run ruff fixer on code base"
+cmd  = "uv run ruff check ."
+
+[tool.poe.tasks.ruff-fix]
+help = "Run ruff fixer on code base"
+cmd  = "uv run ruff check . --fix-only"
+
+[tool.poe.tasks.format]
+help = "Run formatter on the code base"
+cmd  = "uv run ruff --format"
+
+[tool.poe.tasks._uv_lock]
+cmd = "uv lock --locked"
+
+[tool.poe.tasks._precommit_run]
+cmd ="uv run pre-commit run -a"
+
+[tool.poe.tasks.mypy]
+help = "Run mypy"
+cmd = "uv run mypy src"
+
+{%- if cookiecutter.deptry == 'y' %}
+[tool.poe.tasks.deptry]
+help = "🚀 Checking for obsolete dependencies: Running deptry"
+cmd = "uv run deptry ."
+{%- endif %}
+
+[tool.poe.tasks.test]
+help = "Test code with pytest"
+{%- if cookiecutter.codecov == "y" %}
+cmd = "uv run python -m pytest --cov --cov-config=pyproject.toml --cov-report=xml"
+{%- else %}
+cmd = "uv run python -m pytest --doctest-modules"
+{%- endif %}
+
+[tool.poe.tasks.test-quick]
+help = "Run unit and feature tests, excluding slow ones"
+cmd  = "uv run python -m pytest -m 'not slow and not integration'"
+
+[tool.poe.tasks.clean]
+help = "Remove generated files"
+cmd  = """
+rm -rf .coverage
+        .mypy_cache
+        .pytest_cache
+        ./**/__pycache__
+        dist
+        htmlcov
+        ./docs/_build
+"""
+
+[tool.poe.tasks.build]
+help = "Build wheel file"
+sequence = [ "_build_clean", "_wheel" ]
+
+[tool.poe.tasks._build_clean]
+help = "Clean build artifacts"
+cmd = "uv run python -c 'import shutil; import os; shutil.rmtree('dist') if os.path.exists('dist') else None'"
+
+[tool.poe.tasks._wheel]
+help = "Build wheel file"
+cmd = "uvx --from build pyproject-build --installer uv"
+
+[tool.poe.tasks.publish]
+help = "Publish a release to PyPI."
+cmd = "uvx twine upload --repository-url https://upload.pypi.org/legacy/ dist/*"
+
+[tool.poe.tasks.build_and_publish]
+help = "Build and publish"
+sequence = ["build", "publish"]
+
+{%- if cookiecutter.mkdocs == "y" %}
+[tool.poe.tasks.docs_test]
+help = "Test if documentation can be built without errors"
+cmd = "uv run mkdocs build -s"
+
+[tool.poe.tasks.docs]
+help = "Build and serve documentation"
+cmd = "uv run mkdocs serve"
+{%- endif %}
+
+[tool.poe.tasks.run]
+help = "Run the main application"
+cmd = "uv run python src/{{cookiecutter.project_slug}}/main.py"
