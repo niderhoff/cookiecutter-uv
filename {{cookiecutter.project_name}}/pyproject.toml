@@ -1,18 +1,18 @@
 [project]
-name = "example-project"
+name = "{{cookiecutter.project_name}}"
 version = "0.1.0"
 description = "Add your description here."
 readme = "README.md"
 authors = [
-    { name = "Nicolas Iderhoff", email = "hello@niid.xyz" }
+    { name = "{{cookiecutter.author}}", email = "{{cookiecutter.email}}" }
 ]
 requires-python = ">=3.13,<4.0"
 dependencies = []
 
 [project.urls]
-Homepage = "https://niderhoff.github.io/example-project/"
-Repository = "https://github.com/niderhoff/example-project"
-Documentation = "https://niderhoff.github.io/example-project/"
+Homepage = "https://{{cookiecutter.author_github_handle}}.github.io/{{cookiecutter.project_name}}/"
+Repository = "https://github.com/{{cookiecutter.author_github_handle}}/{{cookiecutter.project_name}}/"
+Documentation = "https://{{cookiecutter.author_github_handle}}.github.io/{{cookiecutter.project_name}}/"
 
 [project.scripts]
 x = "x:main"
@@ -32,7 +32,7 @@ dev-dependencies = [
 ]
 
 [tool.mypy]
-files = ["example_project"]
+files = ["{{cookiecutter.project_slug}}"]
 disallow_untyped_defs = "True"
 disallow_any_unimported = "True"
 no_implicit_optional = "True"

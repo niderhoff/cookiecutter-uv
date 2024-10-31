@@ -1,5 +1,5 @@
-from {{cookiecutter.project_slug}}.foo import foo
+from {{cookiecutter.project_slug}}.main import main
 
 
 def test_foo():
-    assert foo("foo") == "foo"
+    assert main("foo") == "foo"
